@@ -286,13 +286,34 @@ void CCannonDlg::OnClickedButtonOpen()
 	}
 	CCamearControl cameraCtrl;
 	//打开相机
+	switch (OpenCamera())
+	{
+		//如果没有相机，返回错误信息
+		case CAMERA_CTRL_NOCAMERA:
+			AfxMessageBox(_T("没有相机！"));
+			return;
+		case CAMERA_CTRL_CONNECTERROR:
+			AfxMessageBox(_T("连接错误，请检查连接线！"));
+			return;
+		case CAMERA_CTRL_OK:
+			AfxMessageBox(_T("相机打开成功！"));
+			return;
+		default: 
+			AfxMessageBox(_T("错误")); 
+			return;	
+	}
+
+
+	/*
 	bool flag = cameraCtrl.OpenCamera();
 	if (flag == false)
 	{
 		AfxMessageBox(_T("获取相机失败"));
 	}
+	
 	else
 	{
+	*/
 		//得到相机可以设置的参数信息
 		flag = cameraCtrl.GetCameraInfo();
 		//创建哈希表
@@ -356,7 +377,7 @@ void CCannonDlg::OnClickedButtonOpen()
 		isoComBox.SetCurSel(isoIndex);
 		avCombox.SetCurSel(avIndex);
 		tvCombox.SetCurSel(tvIndex);
-	}
+	//}
 	flag = cameraCtrl.ReleaseCamera();
 }
 /**************************************************
@@ -1595,4 +1616,60 @@ void CCannonDlg::EditDisplayNum(double number, UINT ID)
 	pEditOne=(CEdit*)GetDlgItem(ID);
 	//显示该数字
 	pEditOne->SetWindowText(str);
+}
+
+
+
+void CCannonDlg::CreatCameraHashList()
+{
+	//创建哈希表
+	CHashList getHashList;
+	getHashList.CreatAllList();
+	int isoIndex(0);
+	//利用哈希表得到命令对应的命令含义
+	for (int i=0 ;i<cameraCtrl.isoPropety.numElements;++i)
+	{
+		CommanderList listTemp;
+		listTemp.key = cameraCtrl.isoPropety.propDesc[i];
+		if (listTemp.key == 0x00)
+		{
+			isoIndex = i;
+		}
+		listTemp.command = getHashList.FindObject(getHashList.isoHashList,listTemp.key);
+		isoList.push_back(listTemp) ;
+		CString stringTemp;
+		stringTemp.Format("%s",listTemp.command.c_str());
+		//命令含义显示在下拉菜单中
+		isoComBox.InsertString(i,stringTemp);
+	}
+	int avIndex(0);
+	for (int i=0 ;i<cameraCtrl.avPropety.numElements;++i)
+	{
+		CommanderList listTemp;
+		listTemp.key = cameraCtrl.avPropety.propDesc[i];
+		if (listTemp.key == 0x28)
+		{
+			avIndex = i;
+		}
+		listTemp.command = getHashList.FindObject(getHashList.avHashList,listTemp.key);
+		avList.push_back(listTemp);
+		CString stringTemp;
+		stringTemp.Format("%s",listTemp.command.c_str());
+		avCombox.InsertString(i,stringTemp);
+	}
+	int tvIndex(0);
+	for (int i=0 ;i<cameraCtrl.tvPropety.numElements;++i)
+	{
+		CommanderList listTemp;
+		listTemp.key = cameraCtrl.tvPropety.propDesc[i];		
+		if (listTemp.key == 0x73)
+		{
+			tvIndex = i;
+		}
+		listTemp.command = getHashList.FindObject(getHashList.tvHashList,listTemp.key);
+		tvList.push_back(listTemp) ;
+		CString stringTemp;
+		stringTemp.Format("%s",listTemp.command.c_str());
+		tvCombox.InsertString(i,stringTemp);
+	}
 }

@@ -1,5 +1,5 @@
-
-// CannonDlg.h : Í·ÎÄ¼ş
+ï»¿
+// CannonDlg.h : å¤´æ–‡ä»¶
 //
 
 #pragma once
@@ -11,25 +11,25 @@
 #include "CProImage.h"
 
 
-// CCannonDlg ¶Ô»°¿ò
+// CCannonDlg å¯¹è¯æ¡†
 class CCannonDlg : public CDialogEx
 {
-// ¹¹Ôì
+// æ„é€ 
 public:
-	CCannonDlg(CWnd* pParent = NULL);	// ±ê×¼¹¹Ôìº¯Êı
+	CCannonDlg(CWnd* pParent = NULL);	// æ ‡å‡†æ„é€ å‡½æ•°
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_CANNON_DIALOG };
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV æ”¯æŒ
 
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	HICON m_hIcon;
 
-	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
-	// DLG³õÊ¼»¯
+	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
+	// DLGåˆå§‹åŒ–
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
@@ -60,12 +60,12 @@ public:
 	afx_msg void OnBnClickedProcessimage();
 	static UINT ProcessImage(LPVOID pParam);
 	afx_msg void OnBnClickedSingalprocess();
-	//¶ÈÊı¼ÆÊı±È±äÁ¿
+	//åº¦æ•°è®¡æ•°æ¯”å˜é‡
 	int stepCount;	
-	//ÅÄÕÕÕÅÊı
+	//æ‹ç…§å¼ æ•°
 	CEdit picNumber;
 	
-	//Í£Ö¹
+	//åœæ­¢
 	afx_msg void OnBnClickedStop();
 	int isSucceed;
 	afx_msg void OnBnClickedBatachimage();
@@ -90,7 +90,7 @@ public:
 	void savechangetofile(string path,int num);
 public:
 	static UINT CCannonDlg::threadFunction(LPVOID pParam);
-	//±£´æº¯Êı
+	//ä¿å­˜å‡½æ•°
 	void Save();
 	static int CALLBACK  BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lParam,LPARAM lpData);
 	bool isStop;
@@ -98,9 +98,11 @@ public:
 private:
 	void InitializeScroll(CScrollBar m_ScrollBar,int start = 0,int end = 100,int initialization = 0);
 	void StringVecToCComboBox(vector<string> stringVec,CComboBox& comList);
-	//ÔÚ±à¼­¿òÏÔÊ¾Êı×Ö
+	//åœ¨ç¼–è¾‘æ¡†æ˜¾ç¤ºæ•°å­—
 	void EditDisplayNum(double number, UINT ID);
-	//´®¿Ú
+	//ä¸²å£
 	void GetSystemCom(vector<string> &stringVec);
 	CComboBox comList;
+	//åˆ›å»ºå“ˆå¸Œè¡¨
+	void CreatCameraHashList();
 };

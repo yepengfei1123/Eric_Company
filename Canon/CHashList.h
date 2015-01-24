@@ -3,13 +3,13 @@
 #include <string>
 #include <vector>
 using namespace std;
-
+//命令结构体
 struct CommanderList
 {
 	string  command;
 	int		key;
 };
-
+//哈希表结构体
 struct HashList
 {
 	string hashCom;
