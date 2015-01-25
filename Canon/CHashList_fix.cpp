@@ -4,9 +4,11 @@
 
 
 
-CHashList::CHashList()
+CCameraCtrlCmdHash::CCameraCtrlCmdHash()
 {
 	CommanderList commandListTemp;
+	vector<CommanderList> isoCommandlist;
+
 	commandListTemp.command = _T("AUTO");
 	commandListTemp.key = 0x00;
 	isoCommandlist.push_back(commandListTemp);
@@ -88,8 +90,10 @@ CHashList::CHashList()
 	commandListTemp.command = _T("102400");
 	commandListTemp.key = 0X98;
 	isoCommandlist.push_back(commandListTemp);
+	isoList.CreatHashList(isoCommandlist);
+	isoCommandlist.clear();
 
-
+	vector<CommanderList> avCommandlist;
 	commandListTemp.command = _T("1");
 	commandListTemp.key = 0X08;
 	avCommandlist.push_back(commandListTemp);
@@ -250,9 +254,11 @@ CHashList::CHashList()
 	commandListTemp.key = 0X70;
 	avCommandlist.push_back(commandListTemp);
 
+	avList.CreatHashList(avCommandlist);
+	avCommandlist.clear();
 
 
-
+	std::vector<CommanderList> tvCommandlist;
 	commandListTemp.command = _T("Bulb");
 	commandListTemp.key = 0X0C;
 	tvCommandlist.push_back(commandListTemp);
@@ -475,10 +481,13 @@ CHashList::CHashList()
 	commandListTemp.command = _T("1/8000");
 	commandListTemp.key = 0XA0;
 	tvCommandlist.push_back(commandListTemp);
+
+	tvList.CreatHashList(tvCommandlist);
+	tvCommandlist.clear();
 }
 
 
-void CHashList::CreatHashList(vector<CommanderList> list,vector<HashList> &hashList)
+void CHashList::CreatHashList(vector<CommanderList> list)
 {
 	int hashSize = list.size() * 1.5;
 	for (size_t i=0; i<hashSize;++i)
@@ -515,7 +524,7 @@ void CHashList::CreatHashList(vector<CommanderList> list,vector<HashList> &hashL
 }
 
 
-string CHashList::FindObject(const vector<HashList>& hashList,const int& objectCode)
+string CHashList::FindObject(const int& objectCode)
 {
 	int adrTemp = objectCode%(hashList.size()-1);
 	if (hashList[adrTemp].hashkey == objectCode)
@@ -546,14 +555,27 @@ string CHashList::FindObject(const vector<HashList>& hashList,const int& objectC
 	}
 }
 
-
+/*
 void CHashList::CreatAllList()
 {
 	this->CreatHashList(isoCommandlist,isoHashList);
 	this->CreatHashList(avCommandlist,avHashList);
 	this->CreatHashList(tvCommandlist,tvHashList);
 }
+*/
 
 
-
-
+string Find(const int& objectCode,COMMANDER command)
+{
+	switch(command)
+	{
+		case ISO:
+			return isoList.FindObject(objectCode);
+		case AV:
+			return avList.FindObject(objectCode);
+		case TV:
+			return tvList.FindObject(objectCode);
+		default:
+			return _T("");
+	}
+}

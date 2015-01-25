@@ -30,8 +30,8 @@ public:
 	//vector<HashList> isoHashList;
 	//void InitCommandList();
 public:
-	string FindObject(const vector<HashList>& hashList,const int& objectCode);
-	void CreatHashList(vector<CommanderList> list,vector<HashList> &hashList);
+	string FindObject(const int& objectCode);
+	void CreatHashList(vector<CommanderList> list);
 	//void process();
 	std::vector<CommanderList> GetCommanderList();
 	std::vector<CHashList> GetHashList();
@@ -47,12 +47,22 @@ class CCameraCtrlCmdHash:CHashList
 public:
 	CCameraCtrlCmdHash();
 	~CCameraCtrlCmdHash();
+	enum COMMANDER
+	{
+		ISO,
+		AV,
+		TV
+	};
+	//void CreatAllList();
+	string Find(const int& objectCode,COMMANDER command);
 private:
-	vector<CommanderList> isoCommandlist;	
-	vector<CommanderList> avCommandlist;
-	vector<HashList> avHashList;
-	vector<CommanderList> tvCommandlist;
-	vector<HashList> tvHashList;	
-	vector<HashList> isoHashList;
-	
+	//vector<CommanderList> isoCommandlist;	
+	//vector<CommanderList> avCommandlist;
+	//vector<HashList> avHashList;
+	//vector<CommanderList> tvCommandlist;
+	//vector<HashList> tvHashList;	
+	//vector<HashList> isoHashList;
+	CHashList isoList;
+	CHashList avList;
+	CHashList tvList;	
 };
