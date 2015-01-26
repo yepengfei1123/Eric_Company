@@ -143,7 +143,26 @@ BOOL CCannonDlg::OnInitDialog()
 	//转盘状态
 	isPlaneStart = true;
 
-/*
+
+	struct ComboBoxStruct comboStuctTmp; 
+
+	comboStuctTmp.comList = &isoComBox;
+	comboStuctTmp.flag = ISO;
+	//ComboxBox的集合
+	comboVec.push_back(&comboStuctTmp);
+
+	comboStuctTmp.comList = &avCombox;
+	comboStuctTmp.flag = AV;
+	//ComboxBox的集合
+	comboVec.push_back(comboStuctTmp);
+
+
+	comboStuctTmp.comList = &tvCombox;
+	comboStuctTmp.flag = TV;
+	//ComboxBox的集合
+	comboVec.push_back(comboStuctTmp);
+
+	/*
 	char buf[300];
 	char buf1[10];
 	int nn;
@@ -314,6 +333,7 @@ void CCannonDlg::OnClickedButtonOpen()
 	else
 	{
 	*/
+		/*
 		//得到相机可以设置的参数信息
 		flag = cameraCtrl.GetCameraInfo();
 		//创建哈希表
@@ -366,7 +386,8 @@ void CCannonDlg::OnClickedButtonOpen()
 			stringTemp.Format("%s",listTemp.command.c_str());
 			tvCombox.InsertString(i,stringTemp);
 		}
-		AfxMessageBox(_T("打开相机成功"));
+		*/
+		//AfxMessageBox(_T("打开相机成功"));
 		CWnd *wd = (CWnd*)GetDlgItem(IDC_PREPARE);
 		wd->EnableWindow(TRUE);
 		wd = (CWnd*)GetDlgItem(IDC_BUTTON2);
@@ -374,11 +395,11 @@ void CCannonDlg::OnClickedButtonOpen()
 		wd = (CWnd*)GetDlgItem(IDC_STOP);
 		wd->EnableWindow(TRUE);
 		//设置默认参数
-		isoComBox.SetCurSel(isoIndex);
-		avCombox.SetCurSel(avIndex);
-		tvCombox.SetCurSel(tvIndex);
+		//isoComBox.SetCurSel(0);
+		//avCombox.SetCurSel(0);
+		//tvCombox.SetCurSel(0);
 	//}
-	flag = cameraCtrl.ReleaseCamera();
+	cameraCtrl.ReleaseCamera();
 }
 /**************************************************
 	函数名: CCannonDlg::OnBnClickedButton2
@@ -1620,25 +1641,35 @@ void CCannonDlg::EditDisplayNum(double number, UINT ID)
 
 
 
-void CCannonDlg::CreatCameraHashList()
+void CCannonDlg::CreatCameraHashList(CCamearControl cameraCtrl)
 {
+	//获取相机的命令信息
+	cameraCtrl.GetCameraInfo();
 	//创建哈希表
-	CHashList getHashList;
-	getHashList.CreatAllList();
-	int isoIndex(0);
+	CCameraCtrlCmdHash cameraCtrlHash;
+	//初始化相机的命令哈希表
+	cameraCtrlHash.InitCameraCtrlHash();
+	int key(0);
+	sting commandStr;
+	//int isoIndex(0);
 	//利用哈希表得到命令对应的命令含义
 	for (int i=0 ;i<cameraCtrl.isoPropety.numElements;++i)
 	{
+		/*
 		CommanderList listTemp;
 		listTemp.key = cameraCtrl.isoPropety.propDesc[i];
+		
 		if (listTemp.key == 0x00)
 		{
 			isoIndex = i;
 		}
-		listTemp.command = getHashList.FindObject(getHashList.isoHashList,listTemp.key);
-		isoList.push_back(listTemp) ;
+		*/
+		key = cameraCtrl.isoPropety.propDesc[i];
+		//listTemp.command = getHashList.FindObject(getHashList.isoHashList,listTemp.key);
+		commandStr = cameraCtrlHash.Find(key,ISO);
+		//isoList.push_back(listTemp);
 		CString stringTemp;
-		stringTemp.Format("%s",listTemp.command.c_str());
+		stringTemp.Format("%s",commandStr.c_str());
 		//命令含义显示在下拉菜单中
 		isoComBox.InsertString(i,stringTemp);
 	}
@@ -1672,4 +1703,48 @@ void CCannonDlg::CreatCameraHashList()
 		stringTemp.Format("%s",listTemp.command.c_str());
 		tvCombox.InsertString(i,stringTemp);
 	}
+}
+
+
+
+void CCannonDlg::FillCommandComboBox(std::vector<int> propety,ComboBoxStruct &comboStruct)
+{
+	int key(0);
+	string commandStr;
+	std::vector<string> commandStr;
+
+	for (std::vector<int>::iterator i = propety.begin(); i != propety.end(); ++i)
+	{
+		key = cameraCtrl.isoPropety.propDesc[i];
+		key = *i;
+		//listTemp.command = getHashList.FindObject(getHashList.isoHashList,listTemp.key);
+		commandStr.push_back(cameraCtrlHash.Find(key,comboStruct.ComboBoxFlag));
+		//isoList.push_back(listTemp);
+		//CString stringTemp;
+		//stringTemp.Format("%s",commandStr.c_str());
+		//命令含义显示在下拉菜单中
+		//isoComBox.InsertString(i,stringTemp);
+	}
+	StringVecToCComboBox(commandStr,*comboStruct.comList);
+	/*
+	for (int i=0 ;i<cameraCtrl.isoPropety.numElements;++i)
+	{
+		CommanderList listTemp;
+		listTemp.key = cameraCtrl.isoPropety.propDesc[i];
+		
+		if (listTemp.key == 0x00)
+		{
+			isoIndex = i;
+		}
+		
+		key = cameraCtrl.isoPropety.propDesc[i];
+		//listTemp.command = getHashList.FindObject(getHashList.isoHashList,listTemp.key);
+		commandStr = cameraCtrlHash.Find(key,ISO);
+		//isoList.push_back(listTemp);
+		CString stringTemp;
+		stringTemp.Format("%s",commandStr.c_str());
+		//命令含义显示在下拉菜单中
+		isoComBox.InsertString(i,stringTemp);
+	}
+	*/
 }

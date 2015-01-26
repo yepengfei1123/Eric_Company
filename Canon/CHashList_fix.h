@@ -22,6 +22,7 @@ class CHashList
 {
 public:
 	CHashList();
+	~CHashList();
 	//vector<CommanderList> isoCommandlist;	
 	//vector<CommanderList> avCommandlist;
 	//vector<HashList> avHashList;
@@ -47,6 +48,7 @@ class CCameraCtrlCmdHash:CHashList
 public:
 	CCameraCtrlCmdHash();
 	~CCameraCtrlCmdHash();
+	void InitCameraCtrlHash();
 	enum COMMANDER
 	{
 		ISO,

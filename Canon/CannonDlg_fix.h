@@ -20,6 +20,17 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_CANNON_DIALOG };
+	enum ComboBoxFlag
+	{
+		ISO,
+		AV,
+		TV
+	};
+	struct ComboBoxStruct
+	{
+		CComboBox* comList,
+		ComboBoxFlag flag
+	};
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
@@ -102,7 +113,11 @@ private:
 	void EditDisplayNum(double number, UINT ID);
 	//串口
 	void GetSystemCom(vector<string> &stringVec);
-	CComboBox comList;
-	//创建哈希表
-	void CreatCameraHashList();
+	CComboBox systemComList;
+	//与下拉菜单对应的相机命令
+	std::vector<int> command;
+	//void CreatCameraHashList();
+	void FillCommandComboBox(CCamearControl cameraCtrl,CComboBox& comList);
+	//DLG下下拉菜单的集合
+	std::vector<ComboBoxStruct> comboVec;
 };

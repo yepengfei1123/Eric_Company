@@ -3,8 +3,7 @@
 #include "CHashList.h"
 
 
-
-CCameraCtrlCmdHash::CCameraCtrlCmdHash()
+void CCameraCtrlCmdHash::InitCameraCtrlHash()
 {
 	CommanderList commandListTemp;
 	vector<CommanderList> isoCommandlist;
@@ -486,6 +485,21 @@ CCameraCtrlCmdHash::CCameraCtrlCmdHash()
 	tvCommandlist.clear();
 }
 
+
+
+CCameraCtrlCmdHash::~CCameraCtrlCmdHash()
+{
+	isoList.~CHashList();
+	avList.~CHashList();
+	tvList.~CHashList();
+}
+
+
+CHashList::~CHashList()
+{
+	commanderList.clear();
+	hashList.clear();
+}
 
 void CHashList::CreatHashList(vector<CommanderList> list)
 {
