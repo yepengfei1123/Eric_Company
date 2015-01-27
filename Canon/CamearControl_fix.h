@@ -87,11 +87,11 @@ private:
 	//相机连接参数
 	CAMERA_CTRL_FLAG connectFlag;  
 	//ISO参数
-	EdsPropertyDesc isoPropety;
+	vector<int> isoPropety;
 	//AV参数
-	EdsPropertyDesc avPropety;
+	vector<int> avPropety;
 	//TV参数
-	EdsPropertyDesc tvPropety;
+	vector<int> tvPropety;
 	//相机事件产生的回调函数指针
 	typedef EdsError ( EDSCALLBACK *EdsObjectEventHandler)(
 		EdsObjectEvent inEvent,       //事件发生的类型
@@ -118,7 +118,7 @@ public:
 	//创建CHashList对象，利用哈希表设置相机参数
 	CHashList list;
 	//得到相机参数；
-	EdsPropertyDesc GetEdsPropertyDesc();
+	vector<int> EdsPropertyDescToIntVec(EdsPropertyDesc propety);
 	//获取相机可设置的参数列表
 	CAMERA_CTRL_FLAG GetCameraInfo();
 	//设置的相机参数

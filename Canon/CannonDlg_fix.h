@@ -115,9 +115,19 @@ private:
 	void GetSystemCom(vector<string> &stringVec);
 	CComboBox systemComList;
 	//与下拉菜单对应的相机命令
-	std::vector<int> command;
-	//void CreatCameraHashList();
-	void FillCommandComboBox(CCamearControl cameraCtrl,CComboBox& comList);
+	std::vector<int> isoCommand;
+	std::vector<int> avCommand;
+	std::vector<int> tvCommand;
+	void CreatCameraHashList(CCamearControl cameraCtrl);
+	void FillCommandComboBox(std::vector<int> propety,ComboBoxStruct &comboStruct);
 	//DLG下下拉菜单的集合
 	std::vector<ComboBoxStruct> comboVec;
+	//打开一个对话框，返回选中的目录
+	CString DirectoryDlg(CString initialDirectory = "C:");
+	void FindInDirectory();
+	vector<CString> FindInDirectory(CString sFolderPath);
+	//创建文件夹
+	void CreateDirectoryTree();
+	//图像处理
+	void BatchProcessImage(std::vector<string> input,std::vector<string> output);
 };

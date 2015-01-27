@@ -316,13 +316,14 @@ void CCannonDlg::OnClickedButtonOpen()
 			return;
 		case CAMERA_CTRL_OK:
 			AfxMessageBox(_T("相机打开成功！"));
-			return;
+			//return;
 		default: 
 			AfxMessageBox(_T("错误")); 
 			return;	
 	}
 
-
+	CreatCameraHashList(cameraCtrl,this.comboVec);
+	UpdateData(true);
 	/*
 	bool flag = cameraCtrl.OpenCamera();
 	if (flag == false)
@@ -688,6 +689,7 @@ UINT CCannonDlg::ProcessImage(LPVOID pParam)
 //UINT CCannonDlg::ProcessImage(LPVOID pParam)
 void CCannonDlg::OnBnClickedProcessimage()
 {
+	/*
 	TCHAR    szPath[MAX_PATH];
 	CString path = dlg1.m_Dlg1Edit4 + "\\";
 	memcpy(szPath,path.GetBuffer(path.GetLength()),path.GetLength());
@@ -714,7 +716,9 @@ void CCannonDlg::OnBnClickedProcessimage()
 		sFolderPath = szPath ;//将文件夹路径保存在一个CString对象里
 		//sFolderPath += "\\";
 	}
-
+	*/
+	//选择文件夹对话框 
+	CString sFolderPath = DirectoryDlg(dlg1.m_Dlg1Edit4);
 
 	//CFileFind finderDict;
 	vector<CString> folderVec;
@@ -1483,138 +1487,6 @@ void CCannonDlg::OnBnClickedTeststop()
 	isPlaneStart = false;
 }
 
-void CCannonDlg::numinfile(string path,int &num,char& ch1,char& ch2,char& ch3)
-{
-	char buf[300];
-	char buf1[20];
-	fstream in(path);
-	int acc=0;
-	char zf1,zf2,zf3;
-
-	for(acc=0;acc<13;acc++)
-	{
-		in.getline(buf,300);	
-		if (acc==0)
-		{
-			zf1 = buf[0];
-		}
-		if (acc==1)
-		{
-			zf2 = buf[0];
-		}
-		if (acc==2)
-		{
-			zf3 = buf[0];
-		}
-		//cout<<buf<<endl;
-	}
-	int sizenum1,sizenum2=0;
-	sizenum1 = strlen(buf);
-	memset(buf1,0,20);
-	for (int i=0;i<sizenum1;i++)
-	{
-		char tem;
-		tem = buf[i];
-		if (tem != ' ')
-		{
-			buf1[i]=buf[i];
-			sizenum2++;
-		}
-		else
-		{
-			break;
-		}
-	}
-	int numtotal = 0;
-	switch (sizenum2)
-	{
-	case 1:
-		numtotal = (buf[0]-65);
-		break;
-	case 2:
-		numtotal = (buf[0]-65)*10+(buf[1]-65);
-		break;
-	case 3:
-		numtotal = (buf[0]-65)*100+(buf[1]-65)*10+(buf[2]-65);
-		break;
-	}
-	num=numtotal;
-	ch1=zf1;
-	ch2=zf2;
-	ch3=zf3;
-}
-void CCannonDlg::savechangetofile(string path,int num)
-{
-	char buf[300];
-	char buf1[20];
-	fstream in(path);
-	ofstream outfile("in2.txt",ios::out|ios::trunc);
-
-	int acc;
-	for(acc=0;acc<13;acc++)
-	{
-		in.getline(buf,300);	
-		if (acc!=12)
-		{
-			outfile<<buf<<endl;
-		}
-	}
-
-	int numtotal = num;
-	char savechar[10];
-	if(numtotal>=0&&numtotal<=9)
-	{
-		savechar[0]=numtotal+65;
-		savechar[1]='\0';
-	}
-	else if(numtotal>=10&&numtotal<=99)
-	{
-		int shi,ge;
-		shi=numtotal/10;
-		ge=numtotal%10;
-		shi+=65;
-		ge+=65;
-		savechar[0]=shi;
-		savechar[1]=ge;
-		savechar[2]='\0';
-	}
-	else if (numtotal>=100&&numtotal<=999)
-	{
-		int bai,shi,ge;
-		int tem;
-		bai = numtotal/100;
-		tem = numtotal%100;
-		shi = tem/10;
-		ge = tem%10;
-		bai+=65;
-		shi+=65;
-		ge+=65;
-		savechar[0]=bai;
-		savechar[1]=shi;
-		savechar[2]=ge;
-		savechar[3]='\0';
-	}
-	string str=savechar;
-	str += " is writen by xarkit.";
-	outfile<<str<<endl;
-	in.close();
-	outfile.close();
-
-	string line;
-	ofstream outfile1(path,ios::out|ios::trunc);
-	fstream file1("in2.txt");    
-	while(!file1.eof())
-	{          
-		getline(file1,line);
-		outfile1<<line<<endl;
-	} 
-	outfile1.close();
-	file1.close();
-	system("del in2.txt");//删除中间文件
-}
-
-
-
 
 
 void CCannonDlg::InitializeScroll(CScrollBar m_ScrollBar,int start,int end,int initialization)
@@ -1641,7 +1513,7 @@ void CCannonDlg::EditDisplayNum(double number, UINT ID)
 
 
 
-void CCannonDlg::CreatCameraHashList(CCamearControl cameraCtrl)
+void CCannonDlg::CreatCameraHashList(CCamearControl cameraCtrl,ComboBoxStruct &comboStruct)
 {
 	//获取相机的命令信息
 	cameraCtrl.GetCameraInfo();
@@ -1649,10 +1521,19 @@ void CCannonDlg::CreatCameraHashList(CCamearControl cameraCtrl)
 	CCameraCtrlCmdHash cameraCtrlHash;
 	//初始化相机的命令哈希表
 	cameraCtrlHash.InitCameraCtrlHash();
-	int key(0);
-	sting commandStr;
+
+	
+	FillCommandComboBox(cameraCtrl.isoPropety,comboStruct[0]);
+	FillCommandComboBox(cameraCtrl.avPropety,comboStruct[1]);
+	FillCommandComboBox(cameraCtrl.tvoPropety,comboStruct[2]);
+	isoCommand = cameraCtrl.isoPropety;
+	avCommand = cameraCtrl.avPropety;
+	tvCommand = cameraCtrl.tvPropety;
+	//int key(0);
+	//sting commandStr;
 	//int isoIndex(0);
 	//利用哈希表得到命令对应的命令含义
+	/*
 	for (int i=0 ;i<cameraCtrl.isoPropety.numElements;++i)
 	{
 		/*
@@ -1663,7 +1544,7 @@ void CCannonDlg::CreatCameraHashList(CCamearControl cameraCtrl)
 		{
 			isoIndex = i;
 		}
-		*/
+		
 		key = cameraCtrl.isoPropety.propDesc[i];
 		//listTemp.command = getHashList.FindObject(getHashList.isoHashList,listTemp.key);
 		commandStr = cameraCtrlHash.Find(key,ISO);
@@ -1703,6 +1584,7 @@ void CCannonDlg::CreatCameraHashList(CCamearControl cameraCtrl)
 		stringTemp.Format("%s",listTemp.command.c_str());
 		tvCombox.InsertString(i,stringTemp);
 	}
+	*/
 }
 
 
@@ -1747,4 +1629,157 @@ void CCannonDlg::FillCommandComboBox(std::vector<int> propety,ComboBoxStruct &co
 		isoComBox.InsertString(i,stringTemp);
 	}
 	*/
+}
+
+
+CString CCannonDlg::DirectoryDlg(CString initialDirectory)
+{
+	TCHAR    szPath[MAX_PATH];
+	CString path = initialDirectory + "\\";
+	memcpy(szPath,path.GetBuffer(path.GetLength()),path.GetLength());
+	CString sFolderPath;
+	BROWSEINFO bi;
+	ZeroMemory(&bi,sizeof(bi));
+	//初始化入口参数bi开始
+	bi.hwndOwner = this->GetSafeHwnd();
+	bi.pidlRoot = NULL;//初始化制定的root目录
+	bi.pszDisplayName = szPath;//此参数如为NULL则不能显示对话框
+	bi.lpszTitle =_T("打开文件夹");
+	//bi.ulFlags = BIF_BROWSEINCLUDEFILES;//包括文件
+	bi.ulFlags = BIF_EDITBOX;//包括文件
+	bi.lpfn = BrowseCallbackProc;
+	bi.lParam = LPARAM(szPath);
+	bi.iImage=0;
+	//初始化入口参数bi结束
+	LPITEMIDLIST pIDList = SHBrowseForFolder(&bi);//调用显示选择对话框
+	if(pIDList)
+	{
+		//SHSetFolderPath(pIDList,)
+		SHGetPathFromIDList(pIDList, szPath);
+		//取得文件夹路径到Buffer里
+		sFolderPath = szPath ;//将文件夹路径保存在一个CString对象里
+		//sFolderPath += "\\";
+	}
+	return sFolderPath;
+}
+
+
+
+vector<CString> CCannonDlg::FindInDirectory(CString sFolderPath)
+{
+	CFileFind finder;
+	CString fileName;
+	vector<CString> filePath;
+	unsigned long filenum=0;
+	//查找该目录下的所有文件
+	sFolderPath += "\\*.*";
+
+	//找到该文件夹下的所有图像文件
+	CFileFind finder;
+	BOOL result = finder.FindFile(sFolderPath);
+	while (result)
+	{
+		result = finder.FindNextFile();
+		if(finder.IsDirectory()|| finder.IsDots() || finder.IsHidden())
+			continue;
+		else//如果是文件
+		{
+			CString str;
+			//得到文件名
+			str = finder.GetFileName();
+			//得到文件后缀名
+			int nLen = str.GetLength() - finder.GetFileTitle().GetLength();
+			str = str.Right(nLen);
+			//判断文件格式，如果是图像文件，将其完整的路径保存在列表中
+			if(str == ".jpg" || str == ".png" || str == ".bmp")
+			{
+				filePath.push_back(finder.GetFilePath());
+			}
+		}		
+	}
+	finder.Close();
+	return filePath;
+}
+
+
+
+void CCannonDlg::CreateDirectoryTree(CString strPath,vector<CString> nameStr)
+{
+	/*
+	vector<CString> pathVector;
+	//if (pDlg->dlg1.m_Width != ""&& _ttoi(pDlg->dlg1.m_Width) )
+	if (dlg1.m_Width != ""&& _ttoi(dlg1.m_Width) )
+	{
+		pathVector.push_back(dlg1.m_Width);
+	}
+	//if (pDlg->dlg1.m_Height != ""&& _ttoi(pDlg->dlg1.m_Height))
+	if (dlg1.m_Height != ""&& _ttoi(dlg1.m_Height))
+	{
+		pathVector.push_back(dlg1.m_Height);
+	}
+	//if (pDlg->dlg1.m_Width3 != ""&& _ttoi(pDlg->dlg1.m_Width3))
+	if (dlg1.m_Width3 != ""&& _ttoi(dlg1.m_Width3))
+	{
+		pathVector.push_back(dlg1.m_Width3);
+	}
+	*/
+
+	//创建处理存储文件夹
+	vector<CString> processPathVec;
+	CFileFind isExist;
+	CString strPathTemp;
+	for (int i=0;i<nameStr.size();++i)
+	{
+		//strPathTemp = strPath;
+		strPathTemp = strPath + _T("Size_") + nameStr[i];// +_T("\\");
+		if (false == isExist.FindFile(strPathTemp))
+		{
+			CreateDirectory(strPathTemp,NULL);
+		}
+
+		strPathTemp = strPathTemp + _T("\\") + _T("process") + _T("\\");
+		processPathVec.push_back(strPathTemp);
+		CreateDirectory(strPathTemp,NULL);
+	}
+	isExist.Close();
+
+	
+}
+
+
+void CCannonDlg::BatchProcessImage(std::vector<string> input,std::vector<string> output)
+{
+	ProImage batchImage;
+	for (int i=0;i<filePath.size();++i)
+	{		
+
+		CStringA stra(filePath[i].GetBuffer(0));
+		std::string orginalImgPath=stra.GetBuffer(0); 
+		batchImage.orginalImgPath = orginalImgPath;
+		Mat temp = imread(orginalImgPath);
+		//showImage(temp,IDC_IMAGE);
+		vector<proSave> savePathVec;
+		CString numtem = _T("");
+		CString strTem = _T("");
+		strTem.Format(_T("%.3d"),i+1);
+		numtem = strTem;
+
+		for (int j=0;j<pathVector.size();++j)
+		{
+
+			proSave saveTemp;
+			saveTemp.width = _ttoi(pathVector[j]);
+
+			CString saveResizeProcessPath = _T("");
+			saveResizeProcessPath = processPathVec[j] + numtem  + _T(".jpg");      //最终的保存路径CString类型
+			CStringA stra2(saveResizeProcessPath.GetBuffer(0));
+			std::string processImgPath=stra2.GetBuffer(0);
+			saveTemp.processPath = processImgPath;
+			saveTemp.resizePath = _T("");
+			savePathVec.push_back(saveTemp);		
+		}
+		//batchImage.threhold =  (uchar) pDlg-> m_ScrollBar.GetScrollPos();
+		batchImage.threhold =  (uchar)  m_ScrollBar.GetScrollPos();
+		batchImage.processImage(savePathVec,true);
+	}
 }

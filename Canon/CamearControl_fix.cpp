@@ -292,7 +292,7 @@ EdsError EDSCALLBACK CCamearControl::process(EdsObjectEvent event,
 	函数名: CCamearControl::GetCameraInfo
 	功能描述: 得到相机可设置的ISO、AV、TV属性
 	输入：无
-	输出：isoPropety：EdsPropertyDesc类型，可以设置的属性列表
+	输出：isoPropety：vector<int>类型，可以设置的属性列表
 		   avPropety：同上
 		   tvPropety：同上
 	返回值: CAMERA_CTRL_FLAG类型
@@ -303,9 +303,17 @@ CAMERA_CTRL_FLAG CCamearControl::GetCameraInfo()
 {
 	EdsError err = EDS_ERR_OK;
 	//得到相机的iso、av、tv参数
-	err = EdsGetPropertyDesc(theCamera,kEdsPropID_ISOSpeed,&isoPropety);
-	err = EdsGetPropertyDesc(theCamera,kEdsPropID_Av,&avPropety);
-	err = EdsGetPropertyDesc(theCamera,kEdsPropID_Tv,&tvPropety);
+	EdsPropertyDesc iso;
+	//AV参数
+	EdsPropertyDesc av;
+	//TV参数
+	EdsPropertyDesc tv;
+	err = EdsGetPropertyDesc(theCamera,kEdsPropID_ISOSpeed,&iso);
+	isoPropety = EdsPropertyDescToIntVec(iso);
+	err = EdsGetPropertyDesc(theCamera,kEdsPropID_Av,&av);
+	avPropety = EdsPropertyDescToIntVec(av);
+	err = EdsGetPropertyDesc(theCamera,kEdsPropID_Tv,&tv);
+	tvPropety = EdsPropertyDescToIntVec(tv);
 	if (err != EDS_ERR_OK)
 	{
 		return CAMERA_CTRL_ERROR;
@@ -402,4 +410,16 @@ CAMERA_CTRL_FLAG CCamearControl::GetImageDirectory(int picNumber,vector<string> 
 	EdsRelease(stream);
 	EdsRelease(currentFolder);
 	return CAMERA_CTRL_OK;
+}
+
+
+
+vector<int> CCamearControl::EdsPropertyDescToIntVec(EdsPropertyDesc propety)
+{
+	std::vector<int> temp;
+	for (int i=0 ;i<propety.numElements;++i)
+	{
+		temp.push_back(propety.propDesc[i]);
+	}
+	return temp;
 }
