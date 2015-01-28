@@ -74,8 +74,7 @@ public:
 	//度数计数比变量
 	int stepCount;	
 	//拍照张数
-	CEdit picNumber;
-	
+	CEdit picNumber;	
 	//停止
 	afx_msg void OnBnClickedStop();
 	int isSucceed;
