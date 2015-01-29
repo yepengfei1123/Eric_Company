@@ -98,10 +98,12 @@ void OnlyCutout(const Mat &input,Mat &output,int threhold)
 	{
 		return;
 	}
-	for (int row=0;row<theImage.rows;++row)
+	output = Mat::zeros(input.Size(),CV_8UC3);
+	for (int row=0;row<input.rows;++row)
 	{
-		uchar *data = theImage.ptr<uchar>(row);
-		for (int col=0;col<theImage.cols;++col)
+		uchar *data = input.ptr<uchar>(row);
+		uchar *outData = output.ptr<uchar>(row); 
+		for (int col=0;col<input.cols;++col)
 		{
 			int b = (int)data[3*col];
 			int g = (int)data[3*col+1];
@@ -109,19 +111,70 @@ void OnlyCutout(const Mat &input,Mat &output,int threhold)
 			//抠图阈值
 			if ((g)>threhold&&(b)>threhold&&r>threhold&&abs(b-r)<10&&abs(b-g)<10)
 			{
-				data[3*col] = 255;
-				data[3*col+1]=255;
-				data[3*col+2]=255;
+				outData[3*col] = 255;
+				outData[3*col+1]=255;
+				outData[3*col+2]=255;
 			}
 		}
 	}
 }
 
-void ResizeAndCutout(const Mat &input,Mat &output,void* para)
+void ResizeAndCutout(const Mat &input,void* para)
 {
 	if (!input.data)
 	{
 		return;
 	}
+	CProImage* pThis = (CProImage *)para;
+	//获取Size的数据
+	std::vector<Size> sizeVec = pThis->resizeVec;
+	std::vector<string> resizeSavePathVec = pThis->resizePathVec;
+	std::vector<string> cutoutSavePathVec = pThis->cutoutPathVec;
+	if (sizeVec.size() != resizeSavePathVec.size() != cutoutSavePathVec.size())
+	{
+		return;
+	}
 	
+	
+
+	
+	
+	switch (pThis->cutoutFlag)
+	{
+		case ONLYRESIZE:
+			Mat outputImage;
+			for (unsigned int i = 0; i != sizeVec.size(); ++i)
+			{
+				//原图resize
+				OnlyResize(outputImage,outputImage,*(sizeVec.begin()+i));
+				//保存原图resize图
+				imwrite((pThis->resizeSavePathVec)[i],outputImage);
+			}
+			break;
+		case ONLYCUTOUT:
+			Mat cutoutImage;
+			//先进行抠图处理
+			OnlyCutout(input,cutoutImage,pThis->threhold);
+			//保存扣图resize图
+			imwrite(pThis->cutoutSavePath,outputImage);			
+			break;
+		case RESIZEANDCUTOUT:
+			Mat cutoutImage;
+			//先进行抠图处理
+			OnlyCutout(input,cutoutImage,pThis->threhold);
+			
+			Mat outputImage;
+			for (unsigned int i = 0; i != sizeVec.size(); ++i)
+			{
+				//原图resize
+				OnlyResize(outputImage,outputImage,*(sizeVec.begin()+i));
+				//保存原图resize图
+				imwrite((pThis->resizeSavePathVec)[i],outputImage);
+				//抠图resize
+				OnlyResize(cutoutImage,outputImage,*(sizeVec.begin()+i));
+				//保存扣图resize图
+				imwrite((pThis->cutoutSavePathVec)[i],outputImage);
+			}
+			
+	}
 }
